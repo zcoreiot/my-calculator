@@ -174,4 +174,76 @@
             <!-- แถวที่ 1: ฟังก์ชันวิทย์ + ล้างสถานะ -->
             <button class="btn-sci" onclick="inputFunc('Math.sin')">sin</button>
             <button class="btn-sci" onclick="inputFunc('Math.cos')">cos</button>
-            <button class="btn-sci" onclick="inputFunc('MathNormally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
+            <button class="btn-sci" onclick="inputFunc('Math.tan')">tan</button>
+            <button class="btn-clear" onclick="clearAll()">AC</button>
+        </div>
+
+        <div class="grid">
+            <!-- แถวที่ 2: ปุ่มตัวเลข  -->
+            <button class="btn-num" onclick="inputNum(7)">7</button>
+            <button class="btn-num" onclick="inputNum(8)">8</button>
+            <button class="btn-num" onclick="inputNum(9)">9</button>
+            <button class="btn-op" onclick="inputOp('/')">/</button>
+        </div>
+
+        <div class="grid">
+            <!-- แถวที่ 3: ปุ่มตัวเลข  -->
+            <button class="btn-num" onclick="inputNum(4)">4</button>
+            <button class="btn-num" onclick="inputNum(5)">5</button>
+            <button class="btn-num" onclick="inputNum(6)">6</button>
+            <button class="btn-op" onclick="inputOp('*')">*</button>
+        </div>
+
+        <div class="grid">
+            <!-- แถวที่ 4: ปุ่มตัวเลข  -->
+            <button class="btn-num" onclick="inputNum(1)">1</button>
+            <button class="btn-num" onclick="inputNum(2)">2</button>
+            <button class="btn-num" onclick="inputNum(3)">3</button>
+            <button class="btn-op" onclick="inputOp('-')">-</button>
+        </div>
+
+        <div class="grid">
+            <!-- แถวที่ 5: ปุ่มตัวเลข  -->
+            <button class="btn-num" onclick="inputNum(0)">0</button>
+            <button class="btn-equal" onclick="calculateResult()">=</button>
+            <button class="btn-op" onclick="inputOp('+')">+</button>
+        </div>
+    </div>
+
+    <script>
+        let formula = '';
+        let result = 0;
+
+        function inputNum(num) {
+            formula += num;
+            document.getElementById('formula').innerText = formula;
+        }
+
+        function inputOp(op) {
+            formula += ' ' + op + ' ';
+            document.getElementById('formula').innerText = formula;
+        }
+
+        function inputFunc(func) {
+            formula += func + '(';
+            document.getElementById('formula').innerText = formula;
+        }
+
+        function clearAll() {
+            formula = '';
+            result = 0;
+            document.getElementById('formula').innerText = formula;
+            document.getElementById('result').innerText = result;
+        }
+
+        function calculateResult() {
+            try {
+                result = eval(formula);
+            } catch (error) {
+                result = 'Error';
+            }
+            document.getElementById('result').innerText = result;
+        }
+    </script>
+</body>
+</html>
