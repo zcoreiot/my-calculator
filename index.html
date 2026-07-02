@@ -184,31 +184,31 @@
         </div>
 
         <div class="grid">
-            <button class="btn-num" onclick="inputNum(7)">7</button>
-            <button class="btn-num" onclick="inputNum(8)">8</button>
-            <button class="btn-num" onclick="inputNum(9)">9</button>
+            <button class="btn-num" onclick="inputNum('7')">7</button>
+            <button class="btn-num" onclick="inputNum('8')">8</button>
+            <button class="btn-num" onclick="inputNum('9')">9</button>
             <button class="btn-op" onclick="inputOp('/')">÷</button>
             <button class="btn-sci" style="visibility: hidden;"></button>
         </div>
 
         <div class="grid">
-            <button class="btn-num" onclick="inputNum(4)">4</button>
-            <button class="btn-num" onclick="inputNum(5)">5</button>
-            <button class="btn-num" onclick="inputNum(6)">6</button>
+            <button class="btn-num" onclick="inputNum('4')">4</button>
+            <button class="btn-num" onclick="inputNum('5')">5</button>
+            <button class="btn-num" onclick="inputNum('6')">6</button>
             <button class="btn-op" onclick="inputOp('*')">×</button>
             <button class="btn-sci" style="visibility: hidden;"></button>
         </div>
 
         <div class="grid">
-            <button class="btn-num" onclick="inputNum(1)">1</button>
-            <button class="btn-num" onclick="inputNum(2)">2</button>
-            <button class="btn-num" onclick="inputNum(3)">3</button>
+            <button class="btn-num" onclick="inputNum('1')">1</button>
+            <button class="btn-num" onclick="inputNum('2')">2</button>
+            <button class="btn-num" onclick="inputNum('3')">3</button>
             <button class="btn-op" onclick="inputOp('-')">−</button>
             <button class="btn-sci" style="visibility: hidden;"></button>
         </div>
 
         <div class="grid">
-            <button class="btn-num" onclick="inputNum(0)">0</button>
+            <button class="btn-num" onclick="inputNum('0')">0</button>
             <button class="btn-op" onclick="inputOp('+')">+</button>
             <button class="btn-equal" style="grid-column: span 3;" onclick="calculateResult()">=</button>
         </div>
@@ -228,6 +228,7 @@
             document.getElementById('formula').innerText = formula;
         }
 
+        // ฟังก์ชันสำหรับใส่สูตรวิทยาศาสตร์ sin, cos, tan
         function inputFunc(func) {
             formula += func + '(';
             document.getElementById('formula').innerText = formula;
@@ -242,13 +243,24 @@
 
         function calculateResult() {
             try {
-                // เปลี่ยนเครื่องหมายบนจอให้เป็นสัญลักษณ์คณิตศาสตร์ที่ eval เข้าใจก่อนประมวลผล
+                // แปลงสัญลักษณ์สวยงามให้กลับเป็นเครื่องหมายคณิตศาสตร์ปกติที่ระบบคำนวณได้
                 let parsedFormula = formula.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+                
+                // ตรวจสอบวงเล็บอัตโนมัติ เผื่อผู้ใช้กด sin( แล้วไม่ได้ปิดวงเล็บ )ก่อนกดเครื่องหมายเท่ากับ
+                let openBrackets = (parsedFormula.match(/\(/g) || []).length;
+                let closeBrackets = (parsedFormula.match(/\)/g) || []).length;
+                while (openBrackets > closeBrackets) {
+                    parsedFormula += ')';
+                    openBrackets--;
+                }
+
                 result = eval(parsedFormula);
                 
                 if (result === undefined) result = 0;
+                
+                // ปัดทศนิยมให้สูงสุดแค่ 4 ตำแหน่ง ป้องกันตัวเลขยาวล้นขอบจอ
                 if (typeof result === 'number' && !Number.isInteger(result)) {
-                    result = Math.round(result * 10000) / 10000; // ปัดเศษทศนิยมไม่ให้ยาวล้นจอ
+                    result = Math.round(result * 10000) / 10000;
                 }
             } catch (error) {
                 result = 'Error';
@@ -256,33 +268,33 @@
             document.getElementById('result').innerText = result;
         }
 
-        // ส่วนดักจับการกดปุ่มจาก Keypad / Keyboard (แก้ไขสมบูรณ์)
+        // --- ระบบดักจับปุ่มคีย์บอร์ดและ Keypad แยก (แก้ไขถูกต้อง 100%) ---
         document.addEventListener('keydown', function(event) {
             let key = event.key;
 
-            // ถ้ากดตัวเลข 0-9
+            // ตรวจสอบถ้ากดเลข 0-9
             if (key >= '0' && key <= '9') {
-                inputNum(parseInt(key));
+                inputNum(key);
             }
             
-            // ถ้ากดปุ่มจุดทศนิยม
+            // ตรวจสอบถ้ากดจุดทศนิยม
             if (key === '.') {
                 inputNum('.');
             }
             
-            // ถ้ากดเครื่องหมายต่าง ๆ
+            // ตรวจสอบถ้ากดเครื่องหมายคำนวณพื้นฐาน
             if (key === '+') inputOp('+');
             if (key === '-') inputOp('-');
             if (key === '*') inputOp('*');
             if (key === '/') inputOp('/');
             
-            // ถ้ากด Enter ให้คำนวณผลลัพธ์
+            // ตรวจสอบถ้ากดปุ่มคำนวณผลลัพธ์ (Enter)
             if (key === 'Enter') {
-                event.preventDefault(); // กันไม่ให้หน้าเว็บเบราว์เซอร์เลื่อนหรือรีเฟรช
+                event.preventDefault(); // ป้องกันหน้าเว็บเลื่อนหรือรีเฟรชตัวเองขณะกดคำนวณ
                 calculateResult();
             }
             
-            // ถ้ากด Escape (ESC) หรือ Backspace ให้ล้างหน้าจอทั้งหมด
+            // ตรวจสอบถ้ากดปุ่มล้างจอ (Escape หรือ Backspace)
             if (key === 'Escape' || key === 'Backspace') {
                 clearAll();
             }
