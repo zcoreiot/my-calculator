@@ -1,30 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-    <title>เครื่องคิดเลขของฉัน</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi-End Luxury Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1e2640 0%, #0b0f19 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ตัวเครื่องคิดเลขสไตล์ไฮเอนด์ */
+        .calculator {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            padding: 32px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        h2 {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* หน้าจอแสดงผลและช่องกรอกเลข */
+        .display-container {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+            padding: 8px 4px;
+            color: #ffffff;
+            font-size: 1.3rem;
+            text-align: right;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-bottom-color: #cca43b; /* สีทองลักชัวรี */
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+        }
+
+        /* ส่วนแสดงผลลัพธ์ */
+        .result-box {
+            text-align: right;
+            padding-top: 8px;
+        }
+
+        .result-box span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #ffffff;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+
+        /* แผงปุ่มกด */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        button {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.6rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* สีปุ่มตัวเลข (ในที่นี้ทำเป็นปุ่มเคลียร์และปุ่มว่างเพื่อความหรูหรา) */
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e5e5e5;
+            grid-column: span 4;
+            aspect-ratio: auto;
+            height: 55px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ปุ่มเครื่องหมาย (+ - * /) สีกระจกหรูหรา */
+        .btn-op {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cca43b; /* ฟอนต์สีทอง */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-op:hover {
+            background: #cca43b;
+            color: #0b0f19;
+            box-shadow: 0 0 20px rgba(204, 164, 59, 0.4);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+    </style>
 </head>
 <body>
-    <h2>เครื่องคิดเลขแบบง่าย</h2>
-    <input type="number" id="num1" placeholder="ตัวเลขที่ 1">
-    <input type="number" id="num2" placeholder="ตัวเลขที่ 2">
-    <br><br>
-    <button onclick="cal('+')">+</button>
-    <button onclick="cal('-')">-</button>
-    <button onclick="cal('*')">*</button>
-    <button onclick="cal('/')">/</button>
-    
-    <h3>ผลลัพธ์: <span id="result">0</span></h3>
+
+    <div class="calculator">
+        <h2>Premium Calculator</h2>
+        
+        <div class="display-container">
+            <div class="input-group">
+                <input type="number" id="num1" placeholder="ตัวเลขที่ 1">
+                <input type="number" id="num2" placeholder="ตัวเลขที่ 2">
+            </div>
+            <div class="result-box">
+                <span>TOTAL RESULT</span>
+                <div class="result-value" id="result">0</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <button class="btn-clear" onclick="clearAll()">Clear</button>
+            <button class="btn-op" onclick="cal('+')">+</button>
+            <button class="btn-op" onclick="cal('-')">−</button>
+            <button class="btn-op" onclick="cal('*')">×</button>
+            <button class="btn-op" onclick="cal('/')">÷</button>
+        </div>
+    </div>
 
     <script>
         function cal(op) {
-            let n1 = parseFloat(document.getElementById('num1').value) || 0;
-            let n2 = parseFloat(document.getElementById('num2').value) || 0;
+            let n1 = parseFloat(document.getElementById('num1').value);
+            let n2 = parseFloat(document.getElementById('num2').value);
+            let resObj = document.getElementById('result');
+
+            // เช็กกรณีไม่ได้กรอกข้อมูล
+            if (isNaN(n1) || isNaN(n2)) {
+                resObj.innerText = 'ระบุตัวเลข';
+                resObj.style.fontSize = '1.5rem';
+                return;
+            }
+
             let res = 0;
-            if(op === '+') res = n1 + n2;
-            if(op === '-') res = n1 - n2;
-            if(op === '*') res = n1 * n2;
-            if(op === '/') res = n2 !== 0 ? n1 / n2 : 'ลบด้วยศูนย์ไม่ได้';
-            document.getElementById('result').innerText = res;
+            if (op === '+') res = n1 + n2;
+            if (op === '-') res = n1 - n2;
+            if (op === '*') res = n1 * n2;
+            if (op === '/') {
+                res = n2 !== 0 ? n1 / n2 : 'Error';
+            }
+
+            // แสดงผลลัพธ์แบบปัดเศษให้สวยงามถ้าทศนิยมยาวเกินไป
+            if (typeof res === 'number' && !Number.isInteger(res)) {
+                res = Math.round(res * 10000) / 10000;
+            }
+
+            resObj.style.fontSize = res.toString().length > 10 ? '1.8rem' : '2.5rem';
+            resObj.innerText = res;
+        }
+
+        function clearAll() {
+            document.getElementById('num1').value = '';
+            document.getElementById('num2').value = '';
+            let resObj = document.getElementById('result');
+            resObj.innerText = '0';
+            resObj.style.fontSize = '2.5rem';
         }
     </script>
 </body>
