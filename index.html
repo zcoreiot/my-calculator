@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>เครื่องคิดเลขของฉัน</title>
+</head>
+<body>
+    <h2>เครื่องคิดเลขแบบง่าย</h2>
+    <input type="number" id="num1" placeholder="ตัวเลขที่ 1">
+    <input type="number" id="num2" placeholder="ตัวเลขที่ 2">
+    <br><br>
+    <button onclick="cal('+')">+</button>
+    <button onclick="cal('-')">-</button>
+    <button onclick="cal('*')">*</button>
+    <button onclick="cal('/')">/</button>
+    
+    <h3>ผลลัพธ์: <span id="result">0</span></h3>
+
+    <script>
+        function cal(op) {
+            let n1 = parseFloat(document.getElementById('num1').value) || 0;
+            let n2 = parseFloat(document.getElementById('num2').value) || 0;
+            let res = 0;
+            if(op === '+') res = n1 + n2;
+            if(op === '-') res = n1 - n2;
+            if(op === '*') res = n1 * n2;
+            if(op === '/') res = n2 !== 0 ? n1 / n2 : 'ลบด้วยศูนย์ไม่ได้';
+            document.getElementById('result').innerText = res;
+        }
+    </script>
+</body>
+</html>
