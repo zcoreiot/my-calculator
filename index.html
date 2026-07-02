@@ -30,7 +30,7 @@
             border-radius: 40px;
             padding: 36px;
             width: 100%;
-            max-width: 480px; /* ขยายกว้างขึ้นเล็กน้อยสำหรับปุ่มวิทยาศาสตร์ */
+            max-width: 480px;
             box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8),
                         inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
@@ -83,6 +83,11 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 14px;
+            margin-bottom: 14px;
+        }
+        
+        .grid:last-child {
+            margin-bottom: 0;
         }
 
         button {
@@ -171,42 +176,41 @@
         </div>
 
         <div class="grid">
-            <!-- แถวที่ 1: ฟังก์ชันวิทย์ + ล้างสถานะ -->
             <button class="btn-sci" onclick="inputFunc('Math.sin')">sin</button>
             <button class="btn-sci" onclick="inputFunc('Math.cos')">cos</button>
             <button class="btn-sci" onclick="inputFunc('Math.tan')">tan</button>
+            <button class="btn-sci" onclick="inputNum('.')">.</button>
             <button class="btn-clear" onclick="clearAll()">AC</button>
         </div>
 
         <div class="grid">
-            <!-- แถวที่ 2: ปุ่มตัวเลข  -->
             <button class="btn-num" onclick="inputNum(7)">7</button>
             <button class="btn-num" onclick="inputNum(8)">8</button>
             <button class="btn-num" onclick="inputNum(9)">9</button>
-            <button class="btn-op" onclick="inputOp('/')">/</button>
+            <button class="btn-op" onclick="inputOp('/')">÷</button>
+            <button class="btn-sci" style="visibility: hidden;"></button>
         </div>
 
         <div class="grid">
-            <!-- แถวที่ 3: ปุ่มตัวเลข  -->
             <button class="btn-num" onclick="inputNum(4)">4</button>
             <button class="btn-num" onclick="inputNum(5)">5</button>
             <button class="btn-num" onclick="inputNum(6)">6</button>
-            <button class="btn-op" onclick="inputOp('*')">*</button>
+            <button class="btn-op" onclick="inputOp('*')">×</button>
+            <button class="btn-sci" style="visibility: hidden;"></button>
         </div>
 
         <div class="grid">
-            <!-- แถวที่ 4: ปุ่มตัวเลข  -->
             <button class="btn-num" onclick="inputNum(1)">1</button>
             <button class="btn-num" onclick="inputNum(2)">2</button>
             <button class="btn-num" onclick="inputNum(3)">3</button>
-            <button class="btn-op" onclick="inputOp('-')">-</button>
+            <button class="btn-op" onclick="inputOp('-')">−</button>
+            <button class="btn-sci" style="visibility: hidden;"></button>
         </div>
 
         <div class="grid">
-            <!-- แถวที่ 5: ปุ่มตัวเลข  -->
             <button class="btn-num" onclick="inputNum(0)">0</button>
-            <button class="btn-equal" onclick="calculateResult()">=</button>
             <button class="btn-op" onclick="inputOp('+')">+</button>
+            <button class="btn-equal" style="grid-column: span 3;" onclick="calculateResult()">=</button>
         </div>
     </div>
 
@@ -238,39 +242,51 @@
 
         function calculateResult() {
             try {
-                result = eval(formula);
+                // เปลี่ยนเครื่องหมายบนจอให้เป็นสัญลักษณ์คณิตศาสตร์ที่ eval เข้าใจก่อนประมวลผล
+                let parsedFormula = formula.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+                result = eval(parsedFormula);
+                
+                if (result === undefined) result = 0;
+                if (typeof result === 'number' && !Number.isInteger(result)) {
+                    result = Math.round(result * 10000) / 10000; // ปัดเศษทศนิยมไม่ให้ยาวล้นจอ
+                }
             } catch (error) {
                 result = 'Error';
             }
             document.getElementById('result').innerText = result;
         }
-        // เพิ่มโค้ดส่วนนี้เพื่อดักจับการกดปุ่มจาก Keypad / Keyboard
-document.addEventListener('keydown', function(event) {
-    let key = event.key;
 
-    // ถ้ากดตัวเลข 0-9
-    if (key >= '0' && key <= '9') {
-        // ในเครื่องคิดเลขวิทยาศาสตร์อันใหม่ ถ้ากรอกเลขให้ไปลงที่ช่อง Input
-        // โค้ดส่วนนี้จะปรับตามโครงสร้างหน้าจอของคุณครับ
-    }
-    
-    // ถ้ากดเครื่องหมายต่าง ๆ
-    if (key === '+') cal('+');
-    if (key === '-') cal('-');
-    if (key === '*') cal('*');
-    if (key === '/') cal('/');
-    
-    // ถ้ากด Enter ให้คำนวณผลลัพธ์ (เท่ากับ)
-    if (key === 'Enter') {
-        event.preventDefault(); // กันไม่ให้หน้าเว็บรีเฟรช
-        // สั่งรันฟังก์ชันคำนวณ
-    }
-    
-    // ถ้ากด Escape (ESC) ให้เคลียร์หน้าจอเหมือนปุ่ม AC
-    if (key === 'Escape') {
-        clearAll();
-    }
-});
+        // ส่วนดักจับการกดปุ่มจาก Keypad / Keyboard (แก้ไขสมบูรณ์)
+        document.addEventListener('keydown', function(event) {
+            let key = event.key;
+
+            // ถ้ากดตัวเลข 0-9
+            if (key >= '0' && key <= '9') {
+                inputNum(parseInt(key));
+            }
+            
+            // ถ้ากดปุ่มจุดทศนิยม
+            if (key === '.') {
+                inputNum('.');
+            }
+            
+            // ถ้ากดเครื่องหมายต่าง ๆ
+            if (key === '+') inputOp('+');
+            if (key === '-') inputOp('-');
+            if (key === '*') inputOp('*');
+            if (key === '/') inputOp('/');
+            
+            // ถ้ากด Enter ให้คำนวณผลลัพธ์
+            if (key === 'Enter') {
+                event.preventDefault(); // กันไม่ให้หน้าเว็บเบราว์เซอร์เลื่อนหรือรีเฟรช
+                calculateResult();
+            }
+            
+            // ถ้ากด Escape (ESC) หรือ Backspace ให้ล้างหน้าจอทั้งหมด
+            if (key === 'Escape' || key === 'Backspace') {
+                clearAll();
+            }
+        });
     </script>
 </body>
 </html>
